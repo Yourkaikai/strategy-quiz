@@ -130,9 +130,9 @@ export function PracticePage() {
 		if (!hydrated || allQuestions.length === 0) return
 
 		const isDrill = !!(location.state && typeof location.state === 'object' && 'drill' in location.state)
-		if (isDrill && session) return // keep the drill session started by caller
+		if (session) return // keep any existing session (drill or full bank)
 
-		// No session or not a drill → start full bank
+		// No session yet → start full bank
 		startPracticeSession({
 			questionIds: allQuestions.map((question) => question.id),
 			subset: 'all',
@@ -400,18 +400,32 @@ export function PracticePage() {
 							<span className="save-label">{isFavorite ? 'Saved' : 'Save'}</span>
 						</span>
 					</button>
-					<button
-						className="primary-button"
-						type="button"
-						onClick={() => setPracticeQuestionIndex(Math.min(questions.length - 1, currentIndex + 1))}
-						disabled={currentIndex === questions.length - 1}
-						aria-label="Next question"
-					>
-						<span className="action-inner">
-							Next
-							<ChevronRightIcon />
-						</span>
-					</button>
+					{currentIndex === questions.length - 1 && selectedAnswer != null ? (
+						<button
+							className="primary-button"
+							type="button"
+							onClick={() => navigate('/')}
+							aria-label="Finish and return home"
+						>
+							<span className="action-inner">
+								Return Home
+								<HomeIcon />
+							</span>
+						</button>
+					) : (
+						<button
+							className="primary-button"
+							type="button"
+							onClick={() => setPracticeQuestionIndex(Math.min(questions.length - 1, currentIndex + 1))}
+							disabled={currentIndex === questions.length - 1}
+							aria-label="Next question"
+						>
+							<span className="action-inner">
+								Next
+								<ChevronRightIcon />
+							</span>
+						</button>
+					)}
 				</>
 			)}
       </div>

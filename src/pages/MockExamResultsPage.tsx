@@ -48,13 +48,9 @@ export function MockExamResultsPage() {
 		navigate('/practice', { state: { drill: true } })
 	}
 
-	const handleAddToPractice = () => {
-		if (wrongQuestionIds.length === 0) {
-			return
-		}
-
+	const handleAddToPractice = (questionId: string) => {
 		startPracticeSession({
-			questionIds: wrongQuestionIds,
+			questionIds: [questionId],
 			subset: 'wrong',
 		})
 		navigate('/practice', { state: { drill: true } })
@@ -113,7 +109,7 @@ export function MockExamResultsPage() {
 									<button
 										type="button"
 										className="primary-button"
-										onClick={handleAddToPractice}
+										onClick={() => handleAddToPractice(entry.id)}
 									>
 										Add to wrong-question practice
 									</button>

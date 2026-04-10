@@ -10,7 +10,7 @@ export function ExamResultsPage() {
 	const latestExam = userState.examHistory[0]
 	const score = resultState?.score ?? latestExam?.score ?? 0
 	const totalQuestions = resultState?.totalQuestions ?? latestExam?.totalQuestions ?? 0
-	const wrongQuestionCount = resultState?.wrongQuestionIds.length ?? Math.max(totalQuestions - score, 0)
+	const wrongQuestionCount = resultState?.wrongQuestionIds?.length ?? Math.max(totalQuestions - score, 0)
 	const accuracy = totalQuestions === 0 ? 0 : Math.round((score / totalQuestions) * 100)
 	const timerMinutes = resultState?.timerMinutes ?? latestExam?.timerMinutes ?? null
 	const completionReason = resultState?.completionReason ?? latestExam?.completionReason ?? 'submitted'
