@@ -177,10 +177,6 @@ export function PracticePage() {
 	const isFavorite = userState.favorites.includes(question.id)
 	const isCorrect = selectedAnswer != null && selectedAnswer === question.correctAnswer
 	const progressPct = questions.length === 0 ? 0 : Math.round(((currentIndex + 1) / questions.length) * 100)
-	// Count answered questions
-	const answeredCount = Object.keys(selectedAnswers).filter(id =>
-		questions.find(q => q.id === id)
-	).length
 
 	const handleAnswerSelect = (answer: AnswerLabel) => {
 		if (selectedAnswers[question.id] != null) {

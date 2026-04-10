@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { getTheme, setTheme } from '../app/storage'
@@ -135,7 +135,6 @@ export function AppShell() {
   const location = useLocation()
   const [theme, setThemeState] = useState<'light' | 'dark'>(getInitialTheme)
   const [headerOpacity, setHeaderOpacity] = useState(1)
-  const lastScrollY = useRef(0)
   const hideQuestionSessionChrome = location.pathname === '/practice'
     || location.pathname === '/exam/session'
     || location.pathname === '/mock/session'

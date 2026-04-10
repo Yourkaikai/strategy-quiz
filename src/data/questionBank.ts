@@ -1,4 +1,4 @@
-import rawQuestionBank from '../../../data/question-bank.cleaned.json'
+import rawQuestionBank from '../../data/question-bank.cleaned.json'
 
 import type { QuestionRecord } from '../app/types'
 
