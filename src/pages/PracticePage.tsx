@@ -129,7 +129,6 @@ export function PracticePage() {
 	useEffect(() => {
 		if (!hydrated || allQuestions.length === 0) return
 
-		const isDrill = !!(location.state && typeof location.state === 'object' && 'drill' in location.state)
 		if (session) return // keep any existing session (drill or full bank)
 
 		// No session yet → start full bank
