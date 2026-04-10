@@ -342,5 +342,73 @@ export async function downloadProgress(): Promise<SyncResult> {
   }
 }
 
+// ── Auto-sync hook integration ──
+
+// localStorage flag to prevent re-download immediately after upload
+const LAST_UPLOAD_KEY = 'sm-quiz-last-upload'
+const AUTO_SYNC_DEBOUNCE_MS = 15_000 // 15 seconds after last state change
+const SKIP_DOWNLOAD_WINDOW_MS = 10_000 // don't auto-download within 10s of an upload
+
+function getLastUploadTime(): number {
+  try {
+    return parseInt(localStorage.getItem(LAST_UPLOAD_KEY) || '0', 10)
+  } catch {
+    return 0
+  }
+}
+
+function setLastUploadTime(): void {
+  localStorage.setItem(LAST_UPLOAD_KEY, String(Date.now()))
+}
+
+/**
+ * Auto-download on first load if connected.
+ * Call this once when the app hydrates.
+ */
+export async function autoDownload(): Promise<{ merged: boolean; message?: string }> {
+  const token = getToken()
+  const gistId = getGistId()
+  if (!token || !gistId) return { merged: false }
+
+  // Skip if we just uploaded (prevent echo)
+  if (Date.now() - getLastUploadTime() < SKIP_DOWNLOAD_WINDOW_MS) {
+    return { merged: false }
+  }
+
+  try {
+    const result = await downloadProgress()
+    if (result.success && (result as unknown as { remoteState?: AppUserState }).remoteState) {
+      saveLastSyncedAt(result.lastSyncedAt || new Date().toISOString())
+      return { merged: true, message: result.message }
+    }
+    return { merged: false, message: result.message }
+  } catch {
+    return { merged: false }
+  }
+}
+
+/**
+ * Auto-upload progress. Call this debounced after state changes.
+ * Skips if we already uploaded recently.
+ */
+export async function autoUpload(state: AppUserState): Promise<boolean> {
+  const token = getToken()
+  if (!token) return false
+
+  // Skip if uploaded within debounce window
+  if (Date.now() - getLastUploadTime() < AUTO_SYNC_DEBOUNCE_MS) return false
+
+  try {
+    const result = await uploadProgress(state)
+    if (result.success) {
+      setLastUploadTime()
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
+
 // Re-export the merge function for use in state.tsx
 export { mergeStates }

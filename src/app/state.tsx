@@ -10,6 +10,10 @@ import {
 } from "react";
 import { defaultUserState, loadUserState, saveUserState, saveUserStateSync } from "./storage";
 import { mergeStates } from "./gistSync";
+
+// ── Auto-sync delay (ms) — upload waits this long after last state change ──
+const AUTO_SYNC_DELAY = 20_000;
+
 import type {
 	AnswerLabel,
 	AppUserState,
@@ -276,6 +280,46 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
 		};
 	}, []);
+
+	// ── Auto cloud sync: download on load, upload on changes ──
+	// Silently syncs progress via GitHub Gist. Fails gracefully — never blocks UI.
+	useEffect(() => {
+		if (!hydrated) return
+
+		let cancelled = false
+
+		// Auto-download once on first hydration
+		import('./gistSync').then(async ({ autoDownload, downloadProgress }) => {
+			const check = await autoDownload()
+			if (cancelled || !check.merged) return
+
+			const dl = await downloadProgress()
+			if (cancelled || !dl.success) return
+
+			// The downloadProgress returns a result with remoteState appended
+			const remote = (dl as unknown as { remoteState?: AppUserState }).remoteState
+			if (remote) {
+				setUserState((local) => mergeStates(local, remote))
+			}
+		})
+
+		return () => { cancelled = true }
+	}, [hydrated]);
+
+	// Auto-upload on state changes (debounced inside autoUpload)
+	useEffect(() => {
+		if (!hydrated) return
+
+		let cancelled = false
+		const timer = setTimeout(async () => {
+			const { autoUpload } = await import('./gistSync')
+			if (!cancelled) {
+				await autoUpload(userStateRef.current)
+			}
+		}, AUTO_SYNC_DELAY)
+
+		return () => { cancelled = true; clearTimeout(timer) }
+	}, [hydrated, userState]);
 
 	const toggleFavorite = useCallback((questionId: string) => {
 		setUserState((currentState) => {
