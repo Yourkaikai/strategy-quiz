@@ -135,6 +135,41 @@ export async function uploadProgress(state: AppUserState): Promise<SyncResult> {
     return { success: false, message: 'No GitHub token configured.' }
   }
 
+  // ── Guard: don't overwrite cloud with empty local state ──
+  // This protects against accidentally uploading a blank slate from a new device.
+  const hasAnyProgress =
+    state.favorites.length > 0 ||
+    state.wrongHistory.length > 0 ||
+    Object.keys(state.practiceProgress).length > 0 ||
+    state.examHistory.length > 0 ||
+    state.mockExamHistory.length > 0
+  if (!hasAnyProgress) {
+    return {
+      success: false,
+      message: 'Nothing to upload — no progress recorded on this device yet. Download first to restore your data.',
+    }
+  }
+
+  // ── Auto-discover gistId if not stored locally (prevents creating duplicate Gists) ──
+  if (!getGistId()) {
+    try {
+      const resp = await githubFetch(token, 'https://api.github.com/gists?per_page=100')
+      const gists = (await resp.json()) as Array<{
+        id: string
+        description: string
+        files: Record<string, unknown>
+      }>
+      const found = gists.find(
+        (g) => GIST_FILENAME in g.files || g.description === GIST_DESCRIPTION,
+      )
+      if (found) {
+        saveGistId(found.id)
+      }
+    } catch {
+      // ignore — will create a new gist if still not found
+    }
+  }
+
   const payload: GistPayload = {
     version: 1,
     exportedAt: new Date().toISOString(),
