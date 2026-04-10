@@ -1562,6 +1562,85 @@
   flex-shrink: 0;
 }
 
+.feedback-explanation-stack {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.feedback-explanation-block {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.feedback-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.feedback-section-copy {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.feedback-option-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.feedback-option-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--surface-raised) 86%, transparent);
+}
+
+.feedback-option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-brand) 12%, var(--surface-base));
+  color: var(--color-brand-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.feedback-option-badge.is-correct {
+  background: color-mix(in oklab, var(--color-success) 16%, var(--surface-base));
+  color: var(--color-success);
+}
+
+.feedback-option-copy {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.feedback-exam-tip {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--color-brand) 10%, var(--surface-raised));
+  border: 1px solid color-mix(in oklab, var(--color-brand) 22%, var(--color-line));
+}
+
 /* No answer key — neutral amber state */
 .feedback-panel--no-key {
   background: linear-gradient(
@@ -1725,6 +1804,61 @@
 @keyframes stickyEnter {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Practice mode banner ── */
+.practice-mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-2) var(--space-4) 0;
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--brand) 12%, var(--surface-overlay));
+  border: 1px solid color-mix(in oklab, var(--brand) 25%, transparent);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  animation: stickyEnter 0.3s var(--ease-spring) both;
+}
+
+[data-theme="dark"] .practice-mode-banner {
+  background: color-mix(in oklab, var(--brand) 15%, var(--surface-raised));
+}
+
+.practice-mode-banner .banner-action {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.78rem;
+  border: 1px solid color-mix(in oklab, var(--brand) 40%, transparent);
+  color: var(--brand);
+  border-radius: var(--radius-pill);
+}
+
+.practice-mode-banner .banner-action:hover {
+  background: color-mix(in oklab, var(--brand) 15%, transparent);
+}
+
+/* ── Practice complete message ── */
+.practice-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-1) 0;
+}
+
+.practice-complete .complete-message {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+.practice-complete .primary-button {
+  text-decoration: none;
+  text-align: center;
 }
 
 /* ─────────────────────────────────────────────

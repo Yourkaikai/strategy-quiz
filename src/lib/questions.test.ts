@@ -48,4 +48,177 @@ describe('question selectors', () => {
     expect(excludedQuestion).toBeUndefined()
     expect(getQuestionsByChapter('08-technology-and-innovation-2')).toHaveLength(24)
   })
+
+  it('exposes authored explanation fields for technology and innovation part 1', () => {
+    const chapterQuestions = getQuestionsByChapter('07-technology-and-innovation-1')
+
+    expect(chapterQuestions).toHaveLength(25)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for technology and innovation part 2', () => {
+    const chapterQuestions = getQuestionsByChapter('08-technology-and-innovation-2')
+
+    expect(chapterQuestions).toHaveLength(24)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+
+    expect(getQuestionById('08-technology-and-innovation-2-q017')).toBeUndefined()
+  })
+
+  it('exposes authored explanation fields for organizational design', () => {
+    const chapterQuestions = getQuestionsByChapter('09-organizational-design')
+
+    expect(chapterQuestions).toHaveLength(17)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for corporate strategies part 2', () => {
+    const chapterQuestions = getQuestionsByChapter('06-corporate-strategy-2')
+
+    expect(chapterQuestions).toHaveLength(25)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for corporate strategies part 1', () => {
+    const chapterQuestions = getQuestionsByChapter('05-corporate-strategy-1')
+
+    expect(chapterQuestions).toHaveLength(25)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for business strategies', () => {
+    const chapterQuestions = getQuestionsByChapter('04-business-strategies')
+
+    expect(chapterQuestions).toHaveLength(25)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for internal analysis', () => {
+    const chapterQuestions = getQuestionsByChapter('03-internal-analysis')
+
+    expect(chapterQuestions).toHaveLength(27)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for external analysis', () => {
+    const chapterQuestions = getQuestionsByChapter('02-external-analysis')
+
+    expect(chapterQuestions).toHaveLength(28)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
+
+  it('exposes authored explanation fields for intro', () => {
+    const chapterQuestions = getQuestionsByChapter('01-intro')
+
+    expect(chapterQuestions).toHaveLength(30)
+
+    for (const question of chapterQuestions) {
+      expect(question['explanation']).toEqual(expect.any(String))
+      expect(question['explanation']).not.toHaveLength(0)
+      expect(question['examTip']).toEqual(expect.any(String))
+      expect(question['examTip']).not.toHaveLength(0)
+      expect(question.options).toHaveLength(4)
+
+      for (const option of question.options) {
+        expect(option['explanation']).toEqual(expect.any(String))
+        expect(option['explanation']).not.toHaveLength(0)
+      }
+    }
+  })
 })

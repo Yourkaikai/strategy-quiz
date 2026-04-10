@@ -12,6 +12,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 import type { AppUserState } from "./app/types";
+import { getQuestionById } from "./lib/questions";
+
+Element.prototype.scrollIntoView = vi.fn();
 
 const storageMock = vi.hoisted(() => {
 	const defaultState: AppUserState = {
@@ -59,6 +62,16 @@ function renderAt(path: string) {
 			<App />
 		</MemoryRouter>,
 	);
+}
+
+function getRequiredQuestion(questionId: string) {
+	const question = getQuestionById(questionId);
+
+	if (!question) {
+		throw new Error(`Missing test question: ${questionId}`);
+	}
+
+	return question;
 }
 
 describe("app shell routes", () => {
@@ -124,6 +137,71 @@ describe("app shell routes", () => {
 		expect(
 			screen.getByRole("button", { name: /remove favorite/i }),
 		).toBeInTheDocument();
+	});
+
+	it("shows authored explanations after a wrong answer in technology and innovation part 1 practice", async () => {
+		const question = getRequiredQuestion("07-technology-and-innovation-1-q001");
+
+		storageMock.reset({
+			activeSession: {
+				mode: "practice",
+				subset: "chapter",
+				chapterId: "07-technology-and-innovation-1",
+				questionIds: ["07-technology-and-innovation-1-q001"],
+				currentIndex: 0,
+				answers: {},
+				startedAt: "2026-04-10T10:00:00.000Z",
+			},
+		});
+
+		renderAt("/practice");
+
+		await screen.findByRole("heading", { name: new RegExp(question.stem, "i") });
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: `A: ${question.options[0].text}`,
+			}),
+		);
+
+		expect(screen.getByText(/incorrect/i)).toBeInTheDocument();
+		expect(screen.getByText(question.explanation ?? "")).toBeInTheDocument();
+		expect(screen.getByText(question.examTip ?? "")).toBeInTheDocument();
+
+		for (const option of question.options) {
+			expect(screen.getByText(option.explanation ?? "")).toBeInTheDocument();
+		}
+	});
+
+	it("shows authored explanations after a correct answer in technology and innovation part 1 practice", async () => {
+		const question = getRequiredQuestion("07-technology-and-innovation-1-q001");
+
+		storageMock.reset({
+			activeSession: {
+				mode: "practice",
+				subset: "chapter",
+				chapterId: "07-technology-and-innovation-1",
+				questionIds: ["07-technology-and-innovation-1-q001"],
+				currentIndex: 0,
+				answers: {},
+				startedAt: "2026-04-10T10:00:00.000Z",
+			},
+		});
+
+		renderAt("/practice");
+
+		await screen.findByRole("heading", { name: new RegExp(question.stem, "i") });
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: `B: ${question.options[1].text}`,
+			}),
+		);
+
+		expect(screen.getByText(/correct!/i)).toBeInTheDocument();
+		expect(screen.getByText(question.explanation ?? "")).toBeInTheDocument();
+		expect(screen.getByText(question.examTip ?? "")).toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: /retry this question/i })).not.toBeInTheDocument();
 	});
 
 	it("hides the global shell header on practice question routes", () => {

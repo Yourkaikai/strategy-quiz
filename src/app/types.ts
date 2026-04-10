@@ -3,6 +3,7 @@ export type AnswerLabel = 'A' | 'B' | 'C' | 'D'
 export interface QuestionOption {
   label: AnswerLabel
   text: string
+  explanation?: string
 }
 
 export interface QuestionRecord {
@@ -21,6 +22,8 @@ export interface QuestionRecord {
     end: number
   }
   ordinalInSource: number
+  explanation?: string
+  examTip?: string
   isExcluded?: boolean
   exclusionReason?: string
 }

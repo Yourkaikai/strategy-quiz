@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppState } from '../app/state'
 import type { AnswerLabel } from '../app/types'
@@ -223,8 +223,35 @@ export function PracticePage() {
 		}
 	}
 
+	// ── Completion detection: last question answered ──
+	const isLastQuestion = currentIndex === questions.length - 1
+	const lastAnswered = isLastQuestion && selectedAnswers[question.id] != null
+	const answeredCount = Object.keys(selectedAnswers).length
+
   return (
     <section className="page-stack" aria-labelledby="practice-heading">
+
+			{/* ── Session mode banner: offer full practice if not already ── */}
+			{session && session.subset !== 'all' && (
+				<div className="practice-mode-banner" role="status">
+					<span>
+						You're in <strong>{sessionLabel}</strong> mode ({questions.length} question{questions.length !== 1 ? 's' : ''})
+					</span>
+					<button
+						className="ghost-button banner-action"
+						type="button"
+						onClick={() => {
+							startPracticeSession({
+								questionIds: allQuestions.map((q) => q.id),
+								subset: 'all',
+							})
+						}}
+					>
+						Start full practice
+					</button>
+				</div>
+			)}
+
       <div className="page-header practice-page-header">
         <p className="section-kicker">Practice mode</p>
         <h2 id="practice-heading">Practice</h2>
@@ -353,42 +380,59 @@ export function PracticePage() {
       </section>
 
 		<div className="sticky-actions">
-			<button
-				className="ghost-button"
-				type="button"
-				onClick={() => setPracticeQuestionIndex(Math.max(0, currentIndex - 1))}
-				disabled={currentIndex === 0}
-				aria-label="Previous question"
-			>
-				<span className="action-inner">
-					<ChevronLeftIcon />
-					Previous
-				</span>
-			</button>
-      <button
-        className="ghost-button save-btn"
-        type="button"
-        onClick={() => toggleFavorite(question.id)}
-        aria-label={isFavorite ? 'Remove from favorites' : 'Save to favorites'}
-        aria-pressed={isFavorite}
-      >
-        <span className="action-inner">
-          <HeartIcon filled={isFavorite} />
-          <span className="save-label">{isFavorite ? 'Saved' : 'Save'}</span>
-        </span>
-      </button>
-			<button
-				className="primary-button"
-				type="button"
-				onClick={() => setPracticeQuestionIndex(Math.min(questions.length - 1, currentIndex + 1))}
-				disabled={currentIndex === questions.length - 1}
-				aria-label="Next question"
-			>
-				<span className="action-inner">
-					Next
-					<ChevronRightIcon />
-				</span>
-        </button>
+			{lastAnswered ? (
+				<div className="practice-complete">
+					<p className="complete-message">
+						{session?.subset === 'chapter'
+							? `Unit complete — ${answeredCount} of ${questions.length} answered.`
+							: session?.subset === 'wrong'
+								? `Wrong drill complete — ${answeredCount} of ${questions.length} answered.`
+								: `All done — ${answeredCount} of ${questions.length} answered.`}
+					</p>
+					<Link to="/" className="primary-button" aria-label="Back to home">
+						<span className="action-inner">Back to home</span>
+					</Link>
+				</div>
+			) : (
+				<>
+					<button
+						className="ghost-button"
+						type="button"
+						onClick={() => setPracticeQuestionIndex(Math.max(0, currentIndex - 1))}
+						disabled={currentIndex === 0}
+						aria-label="Previous question"
+					>
+						<span className="action-inner">
+							<ChevronLeftIcon />
+							Previous
+						</span>
+					</button>
+					<button
+						className="ghost-button save-btn"
+						type="button"
+						onClick={() => toggleFavorite(question.id)}
+						aria-label={isFavorite ? 'Remove from favorites' : 'Save to favorites'}
+						aria-pressed={isFavorite}
+					>
+						<span className="action-inner">
+							<HeartIcon filled={isFavorite} />
+							<span className="save-label">{isFavorite ? 'Saved' : 'Save'}</span>
+						</span>
+					</button>
+					<button
+						className="primary-button"
+						type="button"
+						onClick={() => setPracticeQuestionIndex(Math.min(questions.length - 1, currentIndex + 1))}
+						disabled={currentIndex === questions.length - 1}
+						aria-label="Next question"
+					>
+						<span className="action-inner">
+							Next
+							<ChevronRightIcon />
+						</span>
+					</button>
+				</>
+			)}
       </div>
     </section>
   )
