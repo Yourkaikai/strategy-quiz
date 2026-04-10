@@ -365,7 +365,7 @@ function SyncSection({ userState, mergeRemoteState }: { userState: AppUserState;
 
 export function HomePage() {
 	const navigate = useNavigate()
-	const { startPracticeSession, mergeRemoteState, userState } = useAppState()
+	const { startPracticeSession, mergeRemoteState, userState, cloudSyncing } = useAppState()
 	const chapterCards = getChapterSummaries()
 	const chapterCount = chapterCards.length
 	const totalQuestions = chapterCards.reduce((sum, chapter) => sum + chapter.questionCount, 0)
@@ -439,6 +439,11 @@ export function HomePage() {
 				<div>
 					<p className="section-kicker">Study dashboard</p>
 					<h2 id="home-heading">Welcome back</h2>
+					{cloudSyncing && (
+						<p className="muted-copy" style={{ fontSize: '0.75rem', color: 'var(--color-accent)', marginBottom: 0 }}>
+							☁️ Restoring from cloud…
+						</p>
+					)}
 					<p className="muted-copy">
 						Resume where you left off, drill a chapter, or launch a timed exam session.
 					</p>

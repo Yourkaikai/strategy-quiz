@@ -78,6 +78,7 @@ interface MockExamResultPayload {
 interface AppStateContextValue {
 	userState: AppUserState;
 	hydrated: boolean;
+	cloudSyncing: boolean;
 	clearActiveSession: () => void;
 	setExamAnswer: (questionId: string, answer: AnswerLabel) => void;
 	setExamQuestionIndex: (index: number) => void;
@@ -193,6 +194,7 @@ function buildMockExamSession(
 export function AppStateProvider({ children }: PropsWithChildren) {
 	const [userState, setUserState] = useState<AppUserState>(defaultUserState);
 	const [hydrated, setHydrated] = useState(false);
+	const [cloudSyncing, setCloudSyncing] = useState(false);
 	// Keep a ref to the latest state for beforeunload — avoids stale closure
 	const userStateRef = useRef(userState);
 	userStateRef.current = userState;
@@ -291,9 +293,13 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 		// Auto-download once on first hydration (works on new devices too).
 		// mergeStates always takes the higher value, so running this every load
 		// is safe — it can only add data, never remove it.
-		import('./gistSync').then(async ({ autoDownload }) => {
+		import('./gistSync').then(async ({ autoDownload, hasToken }) => {
+			if (!hasToken()) return
+			setCloudSyncing(true)
 			const result = await autoDownload()
-			if (cancelled || !result.merged || !result.remoteState) return
+			if (cancelled) return
+			setCloudSyncing(false)
+			if (!result.merged || !result.remoteState) return
 			setUserState((local) => mergeStates(local, result.remoteState!))
 		})
 
@@ -606,6 +612,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 		() => ({
 			userState,
 			hydrated,
+			cloudSyncing,
 			clearActiveSession,
 			setExamAnswer,
 			setExamQuestionIndex,
@@ -625,6 +632,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 		}),
 		[
 			clearActiveSession,
+			cloudSyncing,
 			hydrated,
 			recordExamResult,
 			recordMockExamResult,
