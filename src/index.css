@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* ─────────────────────────────────────────────
+   LIGHT MODE — clean slate with violet accent
+───────────────────────────────────────────── */
+:root {
+  /* Core palette — brighter, more contemporary */
+  --color-page:         #fafafa;
+  --color-text:         #18181b;
+  --color-ink:          #09090b;
+  --color-muted:        #71717a;
+  --color-line:         #e4e4e7;
+  --color-accent:       #52525b;
+  --color-accent-strong:#09090b;
+
+  /* Brand accent — rich violet */
+  --brand-h: 262;
+  --brand-s: 83%;
+  --brand-l: 58%;
+  --color-brand:        hsl(var(--brand-h), var(--brand-s), var(--brand-l));
+  --color-brand-soft:   hsl(var(--brand-h), 80%, 97%);
+  --color-brand-mid:    hsl(var(--brand-h), 60%, 93%);
+  --color-brand-glow:   hsla(var(--brand-h), var(--brand-s), var(--brand-l), 0.15);
+  --color-brand-strong: hsla(var(--brand-h), var(--brand-s), calc(var(--brand-l) - 8%), 1);
+
+  /* Accent palette */
+  --color-amber:        #f59e0b;
+  --color-amber-soft:   #fffbeb;
+  --color-rose:         #f43f5e;
+  --color-rose-soft:    #fff1f2;
+
+  /* Semantic colors — refined */
+  --color-success:      #10b981;
+  --color-success-soft: #ecfdf5;
+  --color-success-mid:  #a7f3d0;
+  --color-error:        #ef4444;
+  --color-error-soft:   #fef2f2;
+  --color-warning:      #f59e0b;
+  --color-warning-soft: #fffbeb;
+
+  /* Surfaces — cleaner whites */
+  --surface-base:       rgba(250, 250, 250, 0.98);
+  --surface-raised:     rgba(255, 255, 255, 0.99);
+  --surface-muted:      rgba(244, 244, 245, 0.95);
+  --surface-accent:     rgba(228, 228, 231, 0.50);
+  --surface-glass:      rgba(255, 255, 255, 0.70);
+  --surface-brand:      hsl(var(--brand-h), 80%, 98%);
+  --surface-overlay:    rgba(255, 255, 255, 0.95);
+
+  /* Shadows — softer, more diffused */
+  --shadow-xs:
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-soft:
+    0 1px 3px  rgba(0, 0, 0, 0.03),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.03);
+  --shadow-lifted:
+    0 2px 4px  rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 20px 48px rgba(0, 0, 0, 0.06);
+  --shadow-float:
+    0 4px 6px  rgba(0, 0, 0, 0.03),
+    0 10px 32px rgba(0, 0, 0, 0.10),
+    0 32px 64px rgba(0, 0, 0, 0.08);
+  --shadow-brand:
+    0 4px 20px var(--color-brand-glow),
+    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-brand-strong:
+    0 0 0 1px var(--color-brand-mid),
+    0 4px 24px var(--color-brand-glow),
+    0 2px 6px rgba(0,0,0,0.05);
+  --shadow-success:
+    0 4px 16px rgba(16, 185, 129, 0.15),
+    0 1px 3px rgba(0,0,0,0.04);
+
+  /* Typography — Inter for a modern, neutral feel */
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --text-body:    0.9375rem;
+  --text-label:   0.6875rem;
+  --text-metric:  clamp(2rem, 4.5vw, 2.75rem);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.375rem;
+  --space-6: 1.75rem;
+  --space-7: 2.5rem;
+  --space-8: 3.5rem;
+
+  /* Shape — rounder, friendlier */
+  --radius-sm:   0.5rem;
+  --radius-md:   0.75rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.5rem;
+  --radius-2xl:  2rem;
+  --radius-pill: 999px;
+
+  /* Animation easing curves */
+  --ease-spring:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:     cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  /* Duration scale */
+  --dur-fast:     120ms;
+  --dur-base:     200ms;
+  --dur-slow:     360ms;
+  --dur-enter:    480ms;
+  --dur-reveal:   640ms;
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  background: var(--color-page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-page);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  background: var(--color-page);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle dot grid pattern for light mode — modern, minimal */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, var(--color-line) 1px, transparent 1px);
+  background-repeat: repeat;
+  background-size: 24px 24px;
+  opacity: 0.5;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: clamp(68rem, 88vw, 80rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  border-inline: 1px solid var(--color-line);
+  background: var(--surface-base);
+}
+
+@media (max-width: 47.99rem) {
+  #root {
+    border-inline: 0;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────────
+   DARK MODE — deep navy with vivid violet
+───────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-page:         #09090b;
+  --color-text:         #fafafa;
+  --color-ink:          #fafafa;
+  --color-muted:        #a1a1aa;
+  --color-line:         #27272a;
+  --color-accent:       #a1a1aa;
+  --color-accent-strong:#fafafa;
+
+  /* Brand stays vivid in dark */
+  --brand-h: 262;
+  --brand-s: 85%;
+  --brand-l: 70%;
+  --color-brand:        hsl(var(--brand-h), var(--brand-s), var(--brand-l));
+  --color-brand-soft:   hsl(var(--brand-h), 50%, 10%);
+  --color-brand-mid:    hsl(var(--brand-h), 40%, 18%);
+  --color-brand-glow:   hsla(var(--brand-h), var(--brand-s), var(--brand-l), 0.20);
+  --color-brand-strong: hsl(var(--brand-h), var(--brand-s), 78%);
+
+  /* Semantic colors — brighter for dark bg */
+  --color-success:      #34d399;
+  --color-success-soft: #052e16;
+  --color-success-mid:  #14532d;
+  --color-error:        #fb7185;
+  --color-error-soft:   #2d0a0a;
+
+  --surface-base:       rgba(9, 9, 11, 0.99);
+  --surface-raised:     rgba(18, 18, 22, 0.98);
+  --surface-muted:      rgba(24, 24, 27, 0.96);
+  --surface-accent:     rgba(39, 39, 42, 0.90);
+  --surface-glass:      rgba(18, 18, 22, 0.80);
+  --surface-brand:      hsl(var(--brand-h), 50%, 8%);
+  --surface-overlay:    rgba(18, 18, 22, 0.95);
+
+  --shadow-xs:
+    0 1px 2px rgba(0, 0, 0, 0.50);
+  --shadow-soft:
+    0 1px 2px  rgba(0, 0, 0, 0.50),
+    0 4px 16px rgba(0, 0, 0, 0.55),
+    0 20px 60px rgba(0, 0, 0, 0.40);
+  --shadow-lifted:
+    0 2px 6px  rgba(0, 0, 0, 0.55),
+    0 10px 32px rgba(0, 0, 0, 0.65),
+    0 32px 80px rgba(0, 0, 0, 0.50);
+  --shadow-float:
+    0 4px 8px  rgba(0, 0, 0, 0.55),
+    0 16px 48px rgba(0, 0, 0, 0.70),
+    0 48px 96px rgba(0, 0, 0, 0.55);
+  --shadow-brand:
+    0 4px 24px var(--color-brand-glow),
+    0 1px 4px rgba(0,0,0,0.40);
+  --shadow-brand-strong:
+    0 0 0 1px var(--color-brand-mid),
+    0 4px 32px var(--color-brand-glow),
+    0 2px 8px rgba(0,0,0,0.40);
+  --shadow-success:
+    0 4px 20px rgba(52, 211, 153, 0.18),
+    0 1px 4px rgba(0,0,0,0.40);
+
+  background: var(--color-page);
+}
+
+[data-theme="dark"] body {
+  background: var(--color-page);
+}
+
+/* Dark mode: subtle grid too */
+[data-theme="dark"] body::before {
+  background-image: radial-gradient(circle, var(--color-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.35;
+}
+
+[data-theme="dark"] #root {
+  border-inline-color: var(--color-line);
+  background: var(--surface-base);
+}
+
+/* ─────────────────────────────────────────────
+   GLOBAL SCROLL BEHAVIOR
+───────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   FOCUS RING — accessible, branded
+───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────
+   SELECTION COLOR
+───────────────────────────────────────────── */
+::selection {
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+}
+
+[data-theme="dark"] ::selection {
+  background: var(--color-brand-mid);
+  color: var(--color-brand);
+}
