@@ -299,7 +299,9 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 			const result = await autoDownload()
 			if (cancelled) return
 			setCloudSyncing(false)
+			console.log('[sync] autoDownload result:', result.merged, result.message, !!result.remoteState)
 			if (!result.merged || !result.remoteState) return
+			console.log('[sync] merging remote state, practiceProgress keys:', Object.keys(result.remoteState.practiceProgress ?? {}))
 			setUserState((local) => mergeStates(local, result.remoteState!))
 		})
 
