@@ -289,11 +289,10 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 		let cancelled = false
 
 		// Auto-download once on first hydration (works on new devices too).
-		// Pass whether local has any progress so that an empty local state (e.g.
-		// browser cleared localStorage) always triggers a fresh download.
-		const localHasProgress = hasTransientState(userState)
+		// mergeStates always takes the higher value, so running this every load
+		// is safe — it can only add data, never remove it.
 		import('./gistSync').then(async ({ autoDownload }) => {
-			const result = await autoDownload(localHasProgress)
+			const result = await autoDownload()
 			if (cancelled || !result.merged || !result.remoteState) return
 			setUserState((local) => mergeStates(local, result.remoteState!))
 		})
