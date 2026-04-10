@@ -241,7 +241,8 @@ export function AppShell() {
         </div>
       </header>}
 
-      {!hideQuestionSessionChrome && <nav className="top-nav" aria-label="Primary">
+      {/* Top nav: always rendered; CSS hides it on mobile in question-session */}
+      <nav className={`top-nav${hideQuestionSessionChrome ? ' mobile-hidden' : ''}`} aria-label="Primary">
         {primaryNav.map((item) => (
           <NavLink
             key={item.to}
@@ -252,7 +253,7 @@ export function AppShell() {
             {item.label}
           </NavLink>
         ))}
-      </nav>}
+      </nav>
 
       <main className="app-main">
         <Outlet />

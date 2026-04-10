@@ -2251,6 +2251,22 @@
     display: none;
   }
 
+  /* In question-session pages (Practice, Exam, Mock), show the top nav
+     on desktop since the bottom nav is hidden. Mobile keeps it hidden. */
+  .app-shell.question-session-shell .top-nav {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+  }
+
+  /* Mobile: hide top nav in question-session pages */
+  @media (max-width: 767px) {
+    .app-shell.question-session-shell .top-nav {
+      display: none;
+    }
+  }
+
   .app-main {
     padding-top: var(--space-7);
     padding-bottom: var(--space-7);
