@@ -12,7 +12,7 @@ import { defaultUserState, loadUserState, saveUserState, saveUserStateSync } fro
 import { mergeStates } from "./gistSync";
 
 // ── Auto-sync delay (ms) — upload waits this long after last state change ──
-const AUTO_SYNC_DELAY = 20_000;
+const AUTO_SYNC_DELAY = 10_000;
 
 import type {
 	AnswerLabel,
@@ -288,19 +288,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 
 		let cancelled = false
 
-		// Auto-download once on first hydration
-		import('./gistSync').then(async ({ autoDownload, downloadProgress }) => {
-			const check = await autoDownload()
-			if (cancelled || !check.merged) return
-
-			const dl = await downloadProgress()
-			if (cancelled || !dl.success) return
-
-			// The downloadProgress returns a result with remoteState appended
-			const remote = (dl as unknown as { remoteState?: AppUserState }).remoteState
-			if (remote) {
-				setUserState((local) => mergeStates(local, remote))
-			}
+		// Auto-download once on first hydration (works on new devices too)
+		import('./gistSync').then(async ({ autoDownload }) => {
+			const result = await autoDownload()
+			if (cancelled || !result.merged || !result.remoteState) return
+			setUserState((local) => mergeStates(local, result.remoteState!))
 		})
 
 		return () => { cancelled = true }
