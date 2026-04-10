@@ -5,12 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/strategy-quiz/',
-  build: {
-    rollupOptions: {
-      input: {
-        main: './index.html',
-        '404': './public/404.html',
-      },
-    },
-  },
+  // public/404.html is automatically copied to dist/404.html by Vite's
+  // static file handling — no need to list it as a Rollup entry point.
 })
