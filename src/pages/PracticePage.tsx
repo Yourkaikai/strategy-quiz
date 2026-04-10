@@ -63,6 +63,16 @@ function RotateIcon() {
   )
 }
 
+function InfoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  )
+}
+
 function HomeIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -175,7 +185,13 @@ export function PracticePage() {
 	const selectedAnswer = selectedAnswers[question.id]
 	const chapterQuestionIndex = chapterQuestions.findIndex((entry) => entry.id === question.id)
 	const isFavorite = userState.favorites.includes(question.id)
-	const isCorrect = selectedAnswer != null && selectedAnswer === question.correctAnswer
+	const hasAnswerKey = question.correctAnswer !== null
+	// null = no answer key, true = correct, false = wrong
+	const isCorrect: boolean | null = !hasAnswerKey
+		? null
+		: selectedAnswer != null
+			? selectedAnswer === question.correctAnswer
+			: null
 	const progressPct = questions.length === 0 ? 0 : Math.round(((currentIndex + 1) / questions.length) * 100)
 
 	const handleAnswerSelect = (answer: AnswerLabel) => {
@@ -189,7 +205,8 @@ export function PracticePage() {
 			chapterId: question.chapterId,
 			chapterQuestionIndex,
 			currentIndex,
-			isCorrect: answer === question.correctAnswer,
+			// No answer key → treat as correct so it doesn't pollute wrongHistory
+			isCorrect: hasAnswerKey ? answer === question.correctAnswer : true,
 		})
 	}
 
@@ -243,6 +260,9 @@ export function PracticePage() {
 						<span className="question-counter-sep">/</span>
 						<span className="question-counter-total">{questions.length}</span>
 					</span>
+					{!hasAnswerKey && (
+						<span className="question-toolbar-tag question-toolbar-tag--warning" title="No answer key available for this chapter">No key</span>
+					)}
 					{isResumed && (
 						<span className="question-toolbar-tag">Resumed</span>
 					)}
@@ -269,11 +289,11 @@ export function PracticePage() {
       <ul className="option-list" aria-label="Practice answer choices">
         {question.options.map((option) => {
           const selected = selectedAnswer === option.label
-          const isThisCorrect = selectedAnswer != null && option.label === question.correctAnswer
-          const isThisWrong = selected && option.label !== question.correctAnswer
+          const isThisCorrect = hasAnswerKey && selectedAnswer != null && option.label === question.correctAnswer
+          const isThisWrong = hasAnswerKey && selected && option.label !== question.correctAnswer
 
           let cardClass = 'option-card'
-          if (selected && isCorrect) cardClass += ' is-correct'
+          if (selected && isCorrect === true) cardClass += ' is-correct'
           else if (isThisWrong) cardClass += ' is-wrong'
           else if (selected) cardClass += ' is-selected'
           else if (isThisCorrect) cardClass += ' is-correct'
@@ -296,27 +316,39 @@ export function PracticePage() {
       </ul>
 
       {selectedAnswer ? (
-        <div className={isCorrect ? 'feedback-panel success-panel' : 'feedback-panel'} role="alert">
-          <p className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            {isCorrect ? <CheckCircleIcon /> : <XCircleIcon />}
-            {isCorrect ? 'Correct!' : 'Incorrect'}
-          </p>
-          <p className="muted-copy" style={{ marginTop: 'var(--space-1)' }}>
-            Correct answer: <strong style={{ color: 'var(--color-ink)', fontWeight: 700 }}>{question.correctAnswer}</strong>
-            {' · '}
-            {question.options.find((option) => option.label === question.correctAnswer)?.text}
-          </p>
-          {!isCorrect && (
-            <button
-              className="retry-btn"
-              type="button"
-              onClick={() => clearPracticeAnswer(question.id)}
-            >
-              <RotateIcon />
-              Retry this question
-            </button>
-          )}
-        </div>
+        !hasAnswerKey ? (
+          <div className="feedback-panel feedback-panel--no-key" role="alert">
+            <p className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <InfoIcon />
+              No answer key
+            </p>
+            <p className="muted-copy" style={{ marginTop: 'var(--space-1)' }}>
+              This chapter's PDF doesn't include answer keys. Your selection has been recorded.
+            </p>
+          </div>
+        ) : (
+          <div className={isCorrect ? 'feedback-panel success-panel' : 'feedback-panel'} role="alert">
+            <p className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              {isCorrect ? <CheckCircleIcon /> : <XCircleIcon />}
+              {isCorrect ? 'Correct!' : 'Incorrect'}
+            </p>
+            <p className="muted-copy" style={{ marginTop: 'var(--space-1)' }}>
+              Correct answer: <strong style={{ color: 'var(--color-ink)', fontWeight: 700 }}>{question.correctAnswer}</strong>
+              {' · '}
+              {question.options.find((option) => option.label === question.correctAnswer)?.text}
+            </p>
+            {!isCorrect && (
+              <button
+                className="retry-btn"
+                type="button"
+                onClick={() => clearPracticeAnswer(question.id)}
+              >
+                <RotateIcon />
+                Retry this question
+              </button>
+            )}
+          </div>
+        )
       ) : null}
       </section>
 

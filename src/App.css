@@ -1562,6 +1562,38 @@
   flex-shrink: 0;
 }
 
+/* No answer key — neutral amber state */
+.feedback-panel--no-key {
+  background: linear-gradient(
+    120deg,
+    color-mix(in oklab, var(--color-warning-soft) 90%, var(--surface-raised)) 0%,
+    var(--color-warning-soft) 100%
+  ) !important;
+  border-color: color-mix(in oklab, var(--color-amber) 35%, var(--color-line)) !important;
+  box-shadow: 0 2px 16px rgba(245, 158, 11, 0.08), var(--shadow-xs) !important;
+}
+
+.feedback-panel--no-key::before {
+  background: var(--color-amber) !important;
+}
+
+.feedback-panel--no-key .card-title {
+  color: color-mix(in oklab, var(--color-amber) 80%, var(--color-ink));
+}
+
+[data-theme="dark"] .feedback-panel--no-key {
+  background: linear-gradient(
+    120deg,
+    rgba(245, 158, 11, 0.08) 0%,
+    rgba(245, 158, 11, 0.04) 100%
+  ) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+[data-theme="dark"] .feedback-panel--no-key .card-title {
+  color: var(--color-amber);
+}
+
 .retry-btn {
   display: inline-flex;
   align-items: center;
@@ -2730,6 +2762,10 @@
   color: var(--color-muted);
   letter-spacing: 0.04em;
   padding: 0 var(--space-1);
+}
+
+.question-toolbar-tag--warning {
+  color: var(--color-amber);
 }
 
 .question-toolbar-btn {
