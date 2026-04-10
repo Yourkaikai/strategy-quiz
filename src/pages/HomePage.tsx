@@ -256,13 +256,13 @@ function SyncSection({ userState, mergeRemoteState }: { userState: AppUserState;
 
 			{!hasToken() && showTokenInput && (
 				<div className="sync-token-form">
-					<p className="sync-token-hint muted-copy">
-						Create a token at{' '}
-						<a href="https://github.com/settings/tokens/new?description=Strategy+Quiz+Sync&scopes=" target="_blank" rel="noopener noreferrer">
-							github.com/settings/tokens
-						</a>{' '}
-						(no scopes needed).
-					</p>
+<p className="sync-token-hint muted-copy">
+													Create a token at{' '}
+													<a href="https://github.com/settings/tokens/new?description=Strategy+Quiz+Sync&scopes=gist" target="_blank" rel="noopener noreferrer">
+														github.com/settings/tokens
+													</a>{' '}
+													— select the <strong>gist</strong> scope, no other permissions needed.
+												</p>
 					<div className="sync-token-row">
 						<input
 							className="sync-token-input"
