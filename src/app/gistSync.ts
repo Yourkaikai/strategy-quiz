@@ -293,9 +293,30 @@ export async function downloadProgress(): Promise<SyncResult> {
     return { success: false, message: 'No GitHub token configured.' }
   }
 
-  const gistId = getGistId()
+  // ── Auto-discover gistId if not stored locally (e.g. on a new device) ──
+  let gistId = getGistId()
   if (!gistId) {
-    return { success: false, message: 'No cloud backup found. Upload your progress first.' }
+    try {
+      const resp = await githubFetch(token, 'https://api.github.com/gists?per_page=100')
+      const gists = (await resp.json()) as Array<{
+        id: string
+        description: string
+        files: Record<string, unknown>
+      }>
+      const found = gists.find(
+        (g) => GIST_FILENAME in g.files || g.description === GIST_DESCRIPTION,
+      )
+      if (found) {
+        saveGistId(found.id)
+        gistId = found.id
+      }
+    } catch {
+      // ignore — will fall through to the error below
+    }
+  }
+
+  if (!gistId) {
+    return { success: false, message: 'No cloud backup found. Upload your progress from another device first.' }
   }
 
   try {

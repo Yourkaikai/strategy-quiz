@@ -320,7 +320,7 @@ function SyncSection({ userState, mergeRemoteState }: { userState: AppUserState;
 							className="ghost-button sync-btn"
 							type="button"
 							onClick={handleDownload}
-							disabled={isBusy || !syncStatus.gistId}
+							disabled={isBusy}
 						>
 							<span className="action-inner">
 								{syncing === 'download' ? <SpinnerIcon /> : <CloudDownloadIcon />}
