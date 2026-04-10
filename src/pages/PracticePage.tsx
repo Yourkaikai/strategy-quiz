@@ -344,6 +344,32 @@ export function PracticePage() {
               {' · '}
               {question.options.find((option) => option.label === question.correctAnswer)?.text}
             </p>
+            {question.explanation && (
+              <div className="feedback-explanation-stack">
+                <div className="feedback-explanation-block">
+                  <p style={{ fontWeight: 600, color: 'var(--color-ink)' }}>解析</p>
+                  <p className="muted-copy">{question.explanation}</p>
+                </div>
+                {question.options.some((o) => o.explanation) && (
+                  <div className="feedback-explanation-block">
+                    <p style={{ fontWeight: 600, color: 'var(--color-ink)' }}>逐项解析</p>
+                    {question.options.map((o) =>
+                      o.explanation ? (
+                        <p key={o.label} className="muted-copy">
+                          <strong>{o.label}：</strong>{o.explanation}
+                        </p>
+                      ) : null
+                    )}
+                  </div>
+                )}
+                {question.examTip && (
+                  <div className="feedback-explanation-block">
+                    <p style={{ fontWeight: 600, color: 'var(--color-ink)' }}>💡 考试提示</p>
+                    <p className="muted-copy">{question.examTip}</p>
+                  </div>
+                )}
+              </div>
+            )}
             {!isCorrect && (
               <button
                 className="retry-btn"
