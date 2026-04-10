@@ -67,20 +67,25 @@ export async function loadUserState(): Promise<AppUserState> {
 }
 
 export async function saveUserState(state: AppUserState): Promise<void> {
-  if (!supportsIndexedDb()) {
-    return
-  }
-
-  // Always write to localStorage first (sync) as a crash-refresh backup
-  // then write to IndexedDB (async, larger capacity)
+  // Always write to localStorage first (sync) as a crash-refresh backup.
+  // This runs even if IndexedDB is unavailable so data is never silently lost.
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(state))
   } catch {
     // localStorage may be full or unavailable — continue without it
   }
 
-  const database = await getDatabase()
-  await database.put(STORE_NAME, state, STATE_KEY)
+  if (!supportsIndexedDb()) {
+    return
+  }
+
+  // Also write to IndexedDB (async, larger capacity, survives storage pressure)
+  try {
+    const database = await getDatabase()
+    await database.put(STORE_NAME, state, STATE_KEY)
+  } catch {
+    // IndexedDB write failed — localStorage copy is still the backup
+  }
 }
 
 /**
