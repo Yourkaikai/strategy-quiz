@@ -1,6 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useAppState } from '../app/state'
+import type { AppUserState } from '../app/types'
+import {
+	type GistSyncStatus,
+	type SyncResult,
+	downloadProgress,
+	getSyncStatus,
+	getToken,
+	hasToken,
+	removeToken,
+	saveToken,
+	uploadProgress,
+} from '../app/gistSync'
 import { getMockExamQuestions } from '../lib/mockExam'
 import { getChapterSummaries, getQuestionsByChapter } from '../lib/questions'
 
@@ -66,16 +79,293 @@ function NotebookIcon() {
 }
 
 function ChevronRightIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  )
+	return (
+		<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+			<polyline points="9 18 15 12 9 6"/>
+		</svg>
+	)
+}
+
+function CloudIcon() {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+			<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+		</svg>
+	)
+}
+
+function CloudUploadIcon() {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+			<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+			<polyline points="12 12 12 19"/>
+			<polyline points="9 16 12 19 15 16"/>
+		</svg>
+	)
+}
+
+function CloudDownloadIcon() {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+			<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+			<polyline points="12 16 12 9"/>
+			<polyline points="9 12 12 9 15 12"/>
+		</svg>
+	)
+}
+
+function LogOutIcon() {
+	return (
+		<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+			<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+			<polyline points="16 17 21 12 16 7"/>
+			<line x1="21" y1="12" x2="9" y2="12"/>
+		</svg>
+	)
+}
+
+function SpinnerIcon() {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sync-spinner" aria-hidden="true">
+			<path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+		</svg>
+	)
+}
+
+function SyncSection({ userState, mergeRemoteState }: { userState: AppUserState; mergeRemoteState: (s: AppUserState) => void }) {
+	const [syncStatus, setSyncStatus] = useState<GistSyncStatus>(getSyncStatus())
+	const [tokenInput, setTokenInput] = useState('')
+	const [showTokenInput, setShowTokenInput] = useState(false)
+	const [syncMessage, setSyncMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+	const [syncing, setSyncing] = useState<'upload' | 'download' | null>(null)
+	const [showToken, setShowToken] = useState(false)
+
+	const refreshStatus = useCallback(() => {
+		setSyncStatus(getSyncStatus())
+	}, [])
+
+	useEffect(() => {
+		refreshStatus()
+	}, [refreshStatus])
+
+	const flashMessage = useCallback((type: 'success' | 'error', text: string) => {
+		setSyncMessage({ type, text })
+		const timer = setTimeout(() => setSyncMessage(null), 4000)
+		return () => clearTimeout(timer)
+	}, [])
+
+	const handleConnect = () => {
+		const trimmed = tokenInput.trim()
+		if (!trimmed) return
+		saveToken(trimmed)
+		setTokenInput('')
+		setShowTokenInput(false)
+		refreshStatus()
+		flashMessage('success', 'Token saved. Now click Upload to sync your progress.')
+	}
+
+	const handleDisconnect = () => {
+		removeToken()
+		refreshStatus()
+		flashMessage('success', 'Cloud sync disconnected.')
+	}
+
+	const handleUpload = async () => {
+		setSyncing('upload')
+		setSyncMessage(null)
+		try {
+			const result: SyncResult = await uploadProgress(userState)
+			if (result.success) {
+				refreshStatus()
+				flashMessage('success', result.message)
+			} else {
+				flashMessage('error', result.message)
+			}
+		} catch (err) {
+			flashMessage('error', err instanceof Error ? err.message : 'Upload failed.')
+		}
+		setSyncing(null)
+	}
+
+	const handleDownload = async () => {
+		setSyncing('download')
+		setSyncMessage(null)
+		try {
+			const result: SyncResult & { mergedState?: AppUserState; remoteState?: AppUserState } = await downloadProgress()
+			if (result.success && result.remoteState) {
+				mergeRemoteState(result.remoteState)
+				refreshStatus()
+				flashMessage('success', result.message)
+			} else {
+				flashMessage('error', result.message)
+			}
+		} catch (err) {
+			flashMessage('error', err instanceof Error ? err.message : 'Download failed.')
+		}
+		setSyncing(null)
+	}
+
+	const isBusy = syncing !== null
+	const maskToken = (t: string) => t.length <= 8 ? t : t.slice(0, 4) + '...' + t.slice(-4)
+
+	return (
+		<section className="content-panel sync-panel" aria-labelledby="sync-heading">
+			<div className="panel-heading">
+				<div>
+					<p className="section-kicker">Cross-device sync</p>
+					<h3 id="sync-heading">Cloud Sync</h3>
+				</div>
+				<span className="panel-note">
+					{syncStatus.connected ? (
+						<span className="sync-connected">
+							<span className="sync-dot" aria-hidden="true" />
+							Connected
+						</span>
+					) : hasToken() ? (
+						<span className="sync-pending">Token set</span>
+					) : (
+						<span className="sync-disconnected">Not connected</span>
+					)}
+				</span>
+			</div>
+
+			<p className="sync-description muted-copy">
+				Use a GitHub Personal Access Token to sync your progress across devices.
+				Your data is stored in a private Gist.
+			</p>
+
+			{syncMessage && (
+				<div className={`sync-toast sync-toast--${syncMessage.type}`} role="status" aria-live="polite">
+					{syncMessage.text}
+				</div>
+			)}
+
+			{!hasToken() && !showTokenInput && (
+				<button
+					className="ghost-button sync-btn"
+					type="button"
+					onClick={() => setShowTokenInput(true)}
+					disabled={isBusy}
+				>
+					<span className="action-inner">
+						<CloudIcon />
+						Connect GitHub
+					</span>
+				</button>
+			)}
+
+			{!hasToken() && showTokenInput && (
+				<div className="sync-token-form">
+					<p className="sync-token-hint muted-copy">
+						Create a token at{' '}
+						<a href="https://github.com/settings/tokens/new?description=Strategy+Quiz+Sync&scopes=" target="_blank" rel="noopener noreferrer">
+							github.com/settings/tokens
+						</a>{' '}
+						(no scopes needed).
+					</p>
+					<div className="sync-token-row">
+						<input
+							className="sync-token-input"
+							type={showToken ? 'text' : 'password'}
+							placeholder="ghp_xxxxxxxxxxxx"
+							value={tokenInput}
+							onChange={(e) => setTokenInput(e.target.value)}
+							onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
+							autoComplete="off"
+							spellCheck={false}
+						/>
+						<button
+							className="ghost-button sync-token-toggle"
+							type="button"
+							onClick={() => setShowToken(!showToken)}
+							aria-label={showToken ? 'Hide token' : 'Show token'}
+							title={showToken ? 'Hide' : 'Show'}
+						>
+							{showToken ? 'Hide' : 'Show'}
+						</button>
+						<button
+							className="primary-button sync-token-save"
+							type="button"
+							onClick={handleConnect}
+							disabled={!tokenInput.trim()}
+						>
+							Save
+						</button>
+					</div>
+					<button
+						className="ghost-button sync-cancel-link"
+						type="button"
+						onClick={() => { setShowTokenInput(false); setTokenInput('') }}
+					>
+						Cancel
+					</button>
+				</div>
+			)}
+
+			{hasToken() && (
+				<div className="sync-actions">
+					<div className="sync-actions-row">
+						<button
+							className="ghost-button sync-btn"
+							type="button"
+							onClick={handleUpload}
+							disabled={isBusy || !hasToken()}
+						>
+							<span className="action-inner">
+								{syncing === 'upload' ? <SpinnerIcon /> : <CloudUploadIcon />}
+								{syncing === 'upload' ? 'Uploading...' : 'Upload'}
+							</span>
+						</button>
+						<button
+							className="ghost-button sync-btn"
+							type="button"
+							onClick={handleDownload}
+							disabled={isBusy || !syncStatus.gistId}
+						>
+							<span className="action-inner">
+								{syncing === 'download' ? <SpinnerIcon /> : <CloudDownloadIcon />}
+								{syncing === 'download' ? 'Downloading...' : 'Download'}
+							</span>
+						</button>
+					</div>
+
+					{syncStatus.gistId && syncStatus.lastSyncedAt && (
+						<p className="sync-last-sync muted-copy">
+							Last sync: {new Date(syncStatus.lastSyncedAt).toLocaleString()}
+						</p>
+					)}
+
+					<div className="sync-token-info muted-copy">
+						<span>Token: {showToken ? getToken() : maskToken(getToken() ?? '')}</span>
+						<button
+							className="ghost-button sync-token-toggle"
+							type="button"
+							onClick={() => setShowToken(!showToken)}
+						>
+							{showToken ? 'Hide' : 'Show'}
+						</button>
+					</div>
+
+					<button
+						className="ghost-button sync-disconnect-btn"
+						type="button"
+						onClick={handleDisconnect}
+						disabled={isBusy}
+					>
+						<span className="action-inner">
+							<LogOutIcon />
+							Disconnect
+						</span>
+					</button>
+				</div>
+			)}
+		</section>
+	)
 }
 
 export function HomePage() {
 	const navigate = useNavigate()
-	const { startPracticeSession, userState } = useAppState()
+	const { startPracticeSession, mergeRemoteState, userState } = useAppState()
 	const chapterCards = getChapterSummaries()
 	const chapterCount = chapterCards.length
 	const totalQuestions = chapterCards.reduce((sum, chapter) => sum + chapter.questionCount, 0)
@@ -238,6 +528,9 @@ export function HomePage() {
 					)}
 				</div>
 			)}
+
+			{/* ── CLOUD SYNC ── */}
+			<SyncSection userState={userState} mergeRemoteState={mergeRemoteState} />
 
 			{/* ── ULTIMATE TEST ── */}
 			<section className="content-panel" aria-labelledby="ultimate-test-heading">

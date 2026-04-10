@@ -9,6 +9,7 @@ import {
 	useState,
 } from "react";
 import { defaultUserState, loadUserState, saveUserState, saveUserStateSync } from "./storage";
+import { mergeStates } from "./gistSync";
 import type {
 	AnswerLabel,
 	AppUserState,
@@ -88,6 +89,7 @@ interface AppStateContextValue {
 	clearPracticeAnswer: (questionId: string) => void;
 	recordExamResult: (payload: ExamResultPayload) => void;
 	recordMockExamResult: (payload: MockExamResultPayload) => void;
+	mergeRemoteState: (remoteState: AppUserState) => void;
 }
 
 const AppStateContext = createContext<AppStateContextValue | null>(null);
@@ -542,6 +544,10 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 		});
 	}, []);
 
+	const mergeRemoteState = useCallback((remoteState: AppUserState) => {
+		setUserState((localState) => mergeStates(localState, remoteState));
+	}, []);
+
 	const value = useMemo<AppStateContextValue>(
 		() => ({
 			userState,
@@ -561,6 +567,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 			clearPracticeAnswer,
 			recordExamResult,
 			recordMockExamResult,
+			mergeRemoteState,
 		}),
 		[
 			clearActiveSession,
@@ -580,6 +587,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 			toggleWrongQuestionMastery,
 			toggleFavorite,
 			userState,
+			mergeRemoteState,
 		],
 	);
 
