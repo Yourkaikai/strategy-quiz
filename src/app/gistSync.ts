@@ -449,7 +449,16 @@ export async function autoUpload(state: AppUserState): Promise<boolean> {
   if (Date.now() - getLastUploadTime() < AUTO_SYNC_DEBOUNCE_MS) return false
 
   try {
-    const result = await uploadProgress(state)
+    // Merge with remote before uploading so we never overwrite a more
+    // complete cloud state with a less complete local state.
+    let stateToUpload = state
+    const remoteResult = await downloadProgress()
+    const remoteState = (remoteResult as unknown as { remoteState?: AppUserState }).remoteState
+    if (remoteResult.success && remoteState) {
+      stateToUpload = mergeStates(state, remoteState)
+    }
+
+    const result = await uploadProgress(stateToUpload)
     if (result.success) {
       setLastUploadTime()
       return true
