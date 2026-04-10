@@ -403,7 +403,6 @@ export async function downloadProgress(): Promise<SyncResult> {
 // localStorage flag to prevent re-download immediately after upload
 const LAST_UPLOAD_KEY = 'sm-quiz-last-upload'
 const AUTO_SYNC_DEBOUNCE_MS = 15_000 // 15 seconds after last state change
-const SKIP_DOWNLOAD_WINDOW_MS = 10_000 // don't auto-download within 10s of an upload
 
 function getLastUploadTime(): number {
   try {
