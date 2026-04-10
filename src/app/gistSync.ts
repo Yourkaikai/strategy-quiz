@@ -421,12 +421,13 @@ function setLastUploadTime(): void {
  * Auto-download on first load if token is configured.
  * Works on new devices too — downloadProgress() auto-discovers the gistId.
  */
-export async function autoDownload(): Promise<{ merged: boolean; remoteState?: AppUserState; message?: string }> {
+export async function autoDownload(hasLocalProgress = false): Promise<{ merged: boolean; remoteState?: AppUserState; message?: string }> {
   const token = getToken()
   if (!token) return { merged: false }
 
-  // Skip if we just uploaded (prevent echo)
-  if (Date.now() - getLastUploadTime() < SKIP_DOWNLOAD_WINDOW_MS) {
+  // Skip if we just uploaded (prevent echo) — but always download if local is empty
+  // (e.g. browser cleared localStorage between sessions)
+  if (hasLocalProgress && Date.now() - getLastUploadTime() < SKIP_DOWNLOAD_WINDOW_MS) {
     return { merged: false }
   }
 

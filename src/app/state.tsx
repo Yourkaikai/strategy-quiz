@@ -288,9 +288,12 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 
 		let cancelled = false
 
-		// Auto-download once on first hydration (works on new devices too)
+		// Auto-download once on first hydration (works on new devices too).
+		// Pass whether local has any progress so that an empty local state (e.g.
+		// browser cleared localStorage) always triggers a fresh download.
+		const localHasProgress = hasTransientState(userState)
 		import('./gistSync').then(async ({ autoDownload }) => {
-			const result = await autoDownload()
+			const result = await autoDownload(localHasProgress)
 			if (cancelled || !result.merged || !result.remoteState) return
 			setUserState((local) => mergeStates(local, result.remoteState!))
 		})
@@ -371,8 +374,24 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 	const recordPracticeAnswer = useCallback((payload: PracticeAnswerPayload) => {
 		setUserState((currentState) => {
 			const currentProgress = currentState.practiceProgress[payload.chapterId];
+
+			// Count how many questions in this chapter have been answered in the current session.
+			// This is more accurate than using chapterQuestionIndex + 1 (positional estimate).
+			let sessionChapterAnsweredCount = 0
+			if (currentState.activeSession?.mode === 'practice') {
+				const session = currentState.activeSession
+				const updatedAnswers = { ...session.answers, [payload.questionId]: payload.answer }
+				sessionChapterAnsweredCount = session.questionIds.filter(
+					(qId) => qId === payload.questionId || qId in updatedAnswers
+				).filter((qId) =>
+					// Only count questions that belong to this chapter (relevant for full-bank sessions)
+					qId.startsWith(payload.chapterId)
+				).length
+			}
+
 			const completedCount = Math.max(
 				currentProgress?.completedCount ?? 0,
+				sessionChapterAnsweredCount,
 				payload.chapterQuestionIndex + 1,
 			);
 
