@@ -45,7 +45,7 @@ export function MockExamResultsPage() {
 			questionIds: [questionId],
 			subset: 'wrong',
 		})
-		navigate('/practice')
+		navigate('/practice', { state: { drill: true } })
 	}
 
 	const handleAddToPractice = () => {
@@ -57,7 +57,7 @@ export function MockExamResultsPage() {
 			questionIds: wrongQuestionIds,
 			subset: 'wrong',
 		})
-		navigate('/practice')
+		navigate('/practice', { state: { drill: true } })
 	}
 
 	return (

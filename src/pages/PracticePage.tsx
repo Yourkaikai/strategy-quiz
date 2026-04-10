@@ -122,20 +122,22 @@ export function PracticePage() {
 	} = useAppState()
 	const session = userState.activeSession?.mode === 'practice' ? userState.activeSession : null
 
-	// ── Only start a fresh session AFTER persisted state has been loaded ──
-	// Without the hydrated guard, this effect fires with session=null on the
-	// first render (before IndexedDB/localStorage data is restored), which
-	// overwrites the saved session and breaks resume-on-reload.
+	// ── Start full-bank session if none exists or if not a drill ──
+	// - Drills (chapter, wrong) are started by HomePage/ReviewPage before
+	//   navigating here with { state: { drill: true } } — keep those.
+	// - Direct nav bar "Practice" click has no drill state → always full bank.
 	useEffect(() => {
-		if (!hydrated || session || allQuestions.length === 0) {
-			return
-		}
+		if (!hydrated || allQuestions.length === 0) return
 
+		const isDrill = !!(location.state && typeof location.state === 'object' && 'drill' in location.state)
+		if (isDrill && session) return // keep the drill session started by caller
+
+		// No session or not a drill → start full bank
 		startPracticeSession({
 			questionIds: allQuestions.map((question) => question.id),
 			subset: 'all',
 		})
-	}, [hydrated, allQuestions, session, startPracticeSession])
+	}, [hydrated, allQuestions, session, startPracticeSession, location.state])
 
 	const questions = useMemo(() => {
 		if (!session) {
@@ -230,27 +232,6 @@ export function PracticePage() {
 
   return (
     <section className="page-stack" aria-labelledby="practice-heading">
-
-			{/* ── Session mode banner: offer full practice if not already ── */}
-			{session && session.subset !== 'all' && (
-				<div className="practice-mode-banner" role="status">
-					<span>
-						You're in <strong>{sessionLabel}</strong> mode ({questions.length} question{questions.length !== 1 ? 's' : ''})
-					</span>
-					<button
-						className="ghost-button banner-action"
-						type="button"
-						onClick={() => {
-							startPracticeSession({
-								questionIds: allQuestions.map((q) => q.id),
-								subset: 'all',
-							})
-						}}
-					>
-						Start full practice
-					</button>
-				</div>
-			)}
 
       <div className="page-header practice-page-header">
         <p className="section-kicker">Practice mode</p>

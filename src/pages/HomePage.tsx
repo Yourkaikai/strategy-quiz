@@ -397,7 +397,7 @@ export function HomePage() {
 		if (wrongQuestionIds.length === 0) return
 
 		startPracticeSession({ questionIds: wrongQuestionIds, subset: 'wrong' })
-		navigate('/practice')
+		navigate('/practice', { state: { drill: true } })
 	}
 
 	const handleChapterPracticeStart = (chapterId: string) => {
@@ -408,7 +408,7 @@ export function HomePage() {
 			activeSession?.chapterId === chapterId
 		) {
 			// Continue existing session instead of restarting
-			navigate('/practice')
+			navigate('/practice', { state: { drill: true } })
 			return
 		}
 
@@ -416,7 +416,7 @@ export function HomePage() {
 		if (chapterQuestionIds.length === 0) return
 
 		startPracticeSession({ questionIds: chapterQuestionIds, subset: 'chapter', chapterId })
-		navigate('/practice')
+		navigate('/practice', { state: { drill: true } })
 	}
 
 	const resumeAction = (() => {

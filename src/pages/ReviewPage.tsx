@@ -60,7 +60,7 @@ export function ReviewPage() {
 			questionIds: retryQuestions.map(({ question }) => question.id),
 			subset: "wrong",
 		});
-		navigate("/practice");
+		navigate("/practice", { state: { drill: true } });
 	};
 
 	return (
