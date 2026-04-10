@@ -7711,13 +7711,13 @@
         "label": "A",
         "text": "A firm should delay investing in the next S-curve until signals of diminishing returns on the current technology become visible.",
         "isMarkedCorrect": true,
-        "explanation": "Wrong. 等到当前技术出现回报递减信号时才投资新技术，往往为时已晚，应当提前布局。"
+        "explanation": "Correct. Technology S-curve 的战略含义之一是：企业应当在当前技术出现回报递减信号时，才开始投资下一条 S 曲线，以避免过早切换带来的风险。"
       },
       {
         "label": "B",
         "text": "When a new S-curve emerges, it initially underperforms the existing technology, which is why incumbent firms are often slow to transition.",
         "isMarkedCorrect": false,
-        "explanation": "Correct. 新兴技术初期表现差、成本高，这合理化了 incumbents 难转型的现象。"
+        "explanation": "Wrong. 虽然新兴技术初期表现较差是事实，但这描述的是现象，并非 Technology S-curve 框架的核心战略含义。"
       },
       {
         "label": "C",
@@ -7732,7 +7732,7 @@
         "explanation": "Wrong. S曲线说明技术进步呈 S 型而非恒定速率 (constant rate)。"
       }
     ],
-    "correctAnswer": "B",
+    "correctAnswer": "A",
     "hasAnswerKey": true,
     "sourcePdf": "(WithAnswerKeys)2026 Spring_07 Techn and Innov 1+JH.pdf",
     "sourcePage": {
@@ -7740,8 +7740,8 @@
       "end": 4
     },
     "ordinalInSource": 16,
-    "explanation": "技术 S 曲线 (Technology S-curve) 表明，当新技术（新的 S 曲线）刚刚出现时，由于它还不成熟，在初期表现往往不如已经被高度优化的现有技术。这就是为什么在位企业 (incumbents) 往往迟迟不愿转型。",
-    "examTip": "Exam tip: 新技术最初通常比老技术性能差 (initially underperforms existing tech)。不要被新事物带有的光环迷惑。"
+    "explanation": "Technology S-curve 的战略含义是企业应等到当前技术出现回报递减信号时再投资下一条 S 曲线。过早切换风险大，过晚则可能被竞争对手超越。",
+    "examTip": "Exam tip: S-curve 战略含义 — 等到回报递减信号出现再切换到下一条 S 曲线，平衡过早与过晚的风险。"
   },
   {
     "id": "07-technology-and-innovation-1-q017",
