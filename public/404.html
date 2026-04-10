@@ -4,28 +4,28 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      // GitHub Pages SPA redirect
-      // Converts any 404 path into a query param on the base URL
-      // so index.html's restore script can fix the URL for React Router
-      var seg = window.location.pathname.replace(/^\/strategy-quiz/, '').split('/').slice(1);
-      var base = window.location.pathname.replace(/\/+$/, '').split('/').slice(0, 3).join('/');
-      // If we're already at root, just use the origin
-      if (window.location.pathname === '/strategy-quiz/404.html' ||
-          window.location.pathname === '/strategy-quiz/404.html/') {
-        base = window.location.origin + '/strategy-quiz';
-        // Get the real path from search params if already redirected
-        var restored = window.location.search.slice(1);
-        if (restored) {
-          window.location.replace(base + '/' + restored + window.location.hash);
-        }
-      } else {
-        var realPath = seg.join('/') || '';
-        var qs = window.location.search.slice(1).replace(/&/g, '~and~');
-        var target = base + '/?p=' + realPath;
-        if (qs) target += '&q=' + qs;
-        target += window.location.hash;
-        window.location.replace(target);
-      }
+      // GitHub Pages SPA redirect — standard pattern
+      // When GitHub Pages serves this 404.html for any unknown path,
+      // we encode the intended path as a query param and redirect to
+      // the app root, which will restore it via history.replaceState.
+      //
+      // e.g. /strategy-quiz/practice  →  /strategy-quiz/?p=practice
+      //      /strategy-quiz/exam/session  →  /strategy-quiz/?p=exam/session
+      var basePath = '/strategy-quiz';
+      var loc = window.location;
+      var path = loc.pathname;
+
+      // Strip the base path prefix to get just the sub-route
+      var subPath = path.startsWith(basePath) ? path.slice(basePath.length) : path;
+      // Remove leading slash
+      subPath = subPath.replace(/^\//, '');
+
+      var search = loc.search.slice(1).replace(/&/g, '~and~');
+      var target = loc.origin + basePath + '/?p=' + encodeURIComponent(subPath);
+      if (search) target += '&q=' + search;
+      target += loc.hash;
+
+      loc.replace(target);
     </script>
   </head>
   <body>Redirecting...</body>

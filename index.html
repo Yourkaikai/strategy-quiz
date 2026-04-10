@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web</title>
+    <title>Strategy Quiz</title>
     <script>
     (function() {
       var stored = localStorage.getItem('theme');
@@ -12,12 +12,14 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
 
-      // GitHub Pages SPA redirect: restore the real URL from the rewritten one
+      // GitHub Pages SPA redirect: restore the real URL from the ?p= param
       var params = new URLSearchParams(window.location.search);
       var spaPath = params.get('p');
-      if (spaPath) {
+      if (spaPath !== null) {
+        var decoded = decodeURIComponent(spaPath);
         var hash = window.location.hash || '';
-        window.history.replaceState(null, null, '/strategy-quiz/' + spaPath + hash);
+        var newUrl = '/strategy-quiz/' + (decoded ? decoded + '/' : '');
+        window.history.replaceState(null, null, newUrl + hash);
       }
     })();
   </script>
