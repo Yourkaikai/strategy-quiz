@@ -397,7 +397,6 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 			const completedCount = Math.max(
 				currentProgress?.completedCount ?? 0,
 				sessionChapterAnsweredCount,
-				payload.chapterQuestionIndex + 1,
 			);
 
 			return {

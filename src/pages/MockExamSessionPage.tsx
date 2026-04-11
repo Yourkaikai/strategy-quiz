@@ -13,6 +13,7 @@ export function MockExamSessionPage() {
 	} = useAppState()
 	const session = userState.activeSession?.mode === 'mock-exam' ? userState.activeSession : null
 	const [resultState, setResultState] = useState<MockExamResultState | null>(null)
+	const [submitted, setSubmitted] = useState(false)
 
 	const questions = useMemo(() => {
 		return session?.questionIds
@@ -33,6 +34,8 @@ export function MockExamSessionPage() {
 	const isLastQuestion = session.currentIndex === questions.length - 1
 
 	const handleSubmit = () => {
+		if (submitted) return
+		setSubmitted(true)
 		const summary = scoreMockExam(questions, session.answers)
 		const resultState: MockExamResultState = {
 			...summary,
