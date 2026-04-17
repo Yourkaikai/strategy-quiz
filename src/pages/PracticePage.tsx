@@ -110,7 +110,7 @@ export function PracticePage() {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const [darkMode, setDarkMode] = useState(getTheme() === 'dark')
-	const allQuestions = getAllQuestions()
+	const allQuestions = useMemo(() => getAllQuestions(), [])
 	const {
 		recordPracticeAnswer,
 		clearPracticeAnswer,
