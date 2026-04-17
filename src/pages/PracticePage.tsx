@@ -122,25 +122,23 @@ export function PracticePage() {
 	} = useAppState()
 	const session = userState.activeSession?.mode === 'practice' ? userState.activeSession : null
 
-	// ── Start full-bank session if none exists or if not a drill ──
-	// - Drills (chapter, wrong) are started by HomePage/ReviewPage before
-	//   navigating here with { state: { drill: true } } — keep those.
-	// - Direct nav bar "Practice" click has no drill state → always reset to full bank.
-	const isDrill = !!(location.state && typeof location.state === 'object' && 'drill' in location.state && (location.state as { drill?: boolean }).drill)
+	// ── Keep existing practice session or start a new one ──
+	// - Drills (chapter, wrong) are started by HomePage/ReviewPage with { state: { drill: true } }
+	// - Direct "Practice" nav click has no drill state → only create session if none exists
+
 	useEffect(() => {
 		if (!hydrated || allQuestions.length === 0) return
 
-		// Keep existing session only if we arrived via a drill navigation
-		if (session && isDrill) return
+		// Keep existing session (drill or practice)
+		if (session) return
 
-		// No session or non-drill nav → start fresh full bank
+		// No session → start fresh full bank
 		startPracticeSession({
 			questionIds: allQuestions.map((question) => question.id),
 			subset: 'all',
 		})
-	// Only re-run on navigation events or hydration; NOT on session changes
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [hydrated, allQuestions, isDrill, startPracticeSession, location.key])
+	}, [hydrated, allQuestions, startPracticeSession, location.key])
 
 	const questions = useMemo(() => {
 		if (!session) {
