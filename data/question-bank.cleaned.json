@@ -2909,11 +2909,11 @@
     "chapterTitle": "Internal analysis",
     "questionNumberOriginal": "9",
     "questionNumberNormalized": 9,
-    "stem": "Viral Apparel is the market leader in the sportswear industry. Though most of its resources are common to those of its competitors, a few rare resources have helped the company gain and sustain",
+    "stem": "Viral Apparel is the market leader in the sportswear industry. Though most of its resources are common to those of its competitors, a few rare resources have helped the company gain and sustain competitive advantage. Which of the following assets of Viral Apparel is most likely to be considered a rare resource that is contributing to its competitive advantage?",
     "options": [
       {
         "label": "A",
-        "text": "competitive advantage. Which of the following assets of Viral Apparel is most likely to be considered a rare resource that is contributing to its competitive advantage? the company’s design patents",
+        "text": "the company's design patents",
         "isMarkedCorrect": true,
         "explanation": "正确。题目设定SmartReads大多数资源是通用的（common），但某特定资产是稀缺的——这是带来竞争优势的来源，符合VRIO中稀缺性要求。"
       },
